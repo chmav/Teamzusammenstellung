@@ -34,8 +34,6 @@
         padding: 25px;
         border-radius: 16px;
         box-shadow: 0 2px 15px rgba(0,0,0,0.1);
-        display: flex;
-        flex-direction: column;
     }
 
     label {
@@ -45,38 +43,85 @@
     }
 
     .input-group {
-        margin-bottom: 20px;
+        margin-bottom: 22px;
     }
 
-    input {
+    /* Neues stylisches Number-Input */
+    .number-wrapper {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .number-box {
         width: 100%;
         padding: 12px;
-        border-radius: 10px;
+        border-radius: 12px;
         border: 2px solid #d0d7de;
-        font-size: 16px;
-        transition: 0.2s;
+        font-size: 18px;
+        text-align: center;
+        font-weight: 600;
         outline: none;
+        transition: 0.2s;
     }
 
-    input:focus {
+    .number-box:focus {
         border-color: #4ca1af;
-        box-shadow: 0 0 6px rgba(76,161,175,0.5);
+        box-shadow: 0 0 6px rgba(76,161,175,0.4);
     }
 
+    .stepper {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .step-btn {
+        width: 36px;
+        height: 36px;
+        background: #4ca1af;
+        border: none;
+        border-radius: 8px;
+        color: white;
+        cursor: pointer;
+        font-size: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: 0.15s;
+        font-weight: 700;
+    }
+
+    .step-btn:hover {
+        background: #3b8d98;
+        transform: translateY(-1px);
+    }
+
+    .step-btn:active {
+        transform: scale(0.92);
+    }
+
+    /* Ergebnisbox mit leichter Animation */
     .result-box {
-        margin-top: 10px;
+        margin-top: 15px;
         padding: 20px;
         background: #f7fbff;
         border: 1px solid #c9e6ff;
         border-radius: 12px;
         text-align: center;
         min-height: 50px;
+        opacity: 1;
+        transition: opacity 0.25s ease-out;
+    }
+
+    .fade {
+        opacity: 0.2;
     }
 
     .team {
         display: inline-block;
-        padding: 5px 9px;
-        margin: 4px;
+        padding: 6px 10px;
+        margin: 5px;
         border-radius: 6px;
         color: white;
         font-weight: 700;
@@ -93,12 +138,24 @@
 
     <div class="input-group">
         <label>Anzahl Spieler</label>
-        <input type="number" id="players" value="10" min="1">
+        <div class="number-wrapper">
+            <input type="number" id="players" class="number-box" value="10" min="1">
+            <div class="stepper">
+                <button class="step-btn" onclick="step('players', 1)">▲</button>
+                <button class="step-btn" onclick="step('players', -1)">▼</button>
+            </div>
+        </div>
     </div>
 
     <div class="input-group">
         <label>Anzahl Teams</label>
-        <input type="number" id="teams" value="2" min="2">
+        <div class="number-wrapper">
+            <input type="number" id="teams" class="number-box" value="2" min="2">
+            <div class="stepper">
+                <button class="step-btn" onclick="step('teams', 1)">▲</button>
+                <button class="step-btn" onclick="step('teams', -1)">▼</button>
+            </div>
+        </div>
     </div>
 
     <div class="result-box" id="result">Wird generiert …</div>
@@ -106,7 +163,20 @@
 </div>
 
 <script>
-// Zufällige Farbe für Teams ab D
+// Buttons zum Hoch/Runter-Klicken
+function step(field, amount) {
+    let element = document.getElementById(field);
+    let value = parseInt(element.value);
+    let min = parseInt(element.min);
+
+    value += amount;
+    if (value < min) value = min;
+
+    element.value = value;
+    generateTeams();
+}
+
+// Zufallsfarbe ab Team D
 function getRandomColor() {
     const letters = '0123456789ABCDEF';
     let color = '#';
@@ -117,53 +187,62 @@ function getRandomColor() {
 }
 
 function generateTeams() {
-    const numPlayers = parseInt(document.getElementById("players").value);
-    const numTeams = parseInt(document.getElementById("teams").value);
+    const resultBox = document.getElementById("result");
 
-    let teamLetters = [];
-    for (let i = 0; i < numTeams; i++) {
-        teamLetters.push(String.fromCharCode(65 + i)); // A, B, C...
-    }
+    // Animation einleiten
+    resultBox.classList.add("fade");
 
-    // Fest definierte Farben
-    let teamColors = {
-        "A": "black",
-        "B": "red",
-        "C": "green"
-    };
+    setTimeout(() => {
+        const numPlayers = parseInt(document.getElementById("players").value);
+        const numTeams = parseInt(document.getElementById("teams").value);
 
-    // Für Teams ab D → zufällige Farben
-    for (let i = 3; i < numTeams; i++) {
-        teamColors[String.fromCharCode(65 + i)] = getRandomColor();
-    }
+        let teamLetters = [];
+        for (let i = 0; i < numTeams; i++) {
+            teamLetters.push(String.fromCharCode(65 + i));
+        }
 
-    let distribution = [];
+        // feste Farben
+        let teamColors = {
+            "A": "black",
+            "B": "red",
+            "C": "green"
+        };
 
-    // Gleichmäßige Verteilung
-    for (let i = 0; i < numPlayers; i++) {
-        distribution.push(teamLetters[i % numTeams]);
-    }
+        // zufällige Farben ab D
+        for (let i = 3; i < numTeams; i++) {
+            teamColors[String.fromCharCode(65 + i)] = getRandomColor();
+        }
 
-    // Fisher-Yates Shuffle
-    for (let i = distribution.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [distribution[i], distribution[j]] = [distribution[j], distribution[i]];
-    }
+        let distribution = [];
+        for (let i = 0; i < numPlayers; i++) {
+            distribution.push(teamLetters[i % numTeams]);
+        }
 
-    // Farbig darstellen
-    let html = "";
-    distribution.forEach(team => {
-        html += `<span class="team" style="background:${teamColors[team]}">${team}</span>`;
-    });
+        // Shuffle
+        for (let i = distribution.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [distribution[i], distribution[j]] = [distribution[j], distribution[i]];
+        }
 
-    document.getElementById("result").innerHTML = html;
+        // HTML erzeugen
+        let html = "";
+        distribution.forEach(team => {
+            html += `<span class="team" style="background:${teamColors[team]}">${team}</span>`;
+        });
+
+        resultBox.innerHTML = html;
+
+        // Animation ausblenden
+        resultBox.classList.remove("fade");
+
+    }, 200); // kurze Verzögerung für Animation
 }
 
-// Neue Ausgabe bei Eingaben
+// Listener
 document.getElementById("players").addEventListener("input", generateTeams);
 document.getElementById("teams").addEventListener("input", generateTeams);
 
-// Erste Ausgabe
+// Start
 generateTeams();
 </script>
 
