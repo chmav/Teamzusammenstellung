@@ -33,7 +33,14 @@
         display: block;
         margin-top: 15px;
     }
-
+.team {
+    display: inline-block;
+    padding: 4px 8px;
+    margin: 2px;
+    border-radius: 4px;
+    color: white;
+    font-weight: bold;
+}
     input {
         width: 100%;
         padding: 8px;
@@ -68,6 +75,15 @@
 </div>
 
 <script>
+function getRandomColor() {
+    const letters = '0123456789ABCDEF';
+    let color = '#';
+    for (let i = 0; i < 6; i++) {
+        color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+}
+
 function generateTeams() {
     const numPlayers = parseInt(document.getElementById("players").value);
     const numTeams = parseInt(document.getElementById("teams").value);
@@ -75,6 +91,18 @@ function generateTeams() {
     let teamLetters = [];
     for (let i = 0; i < numTeams; i++) {
         teamLetters.push(String.fromCharCode(65 + i)); // A, B, C, ...
+    }
+
+    // Farben definieren
+    let teamColors = {
+        "A": "black",
+        "B": "red",
+        "C": "green"
+    };
+
+    // Ab Team D → zufällige Farben
+    for (let i = 3; i < numTeams; i++) {
+        teamColors[String.fromCharCode(65 + i)] = getRandomColor();
     }
 
     let distribution = [];
@@ -90,14 +118,20 @@ function generateTeams() {
         [distribution[i], distribution[j]] = [distribution[j], distribution[i]];
     }
 
-    document.getElementById("result").innerText = distribution.join(" ");
+    // Ausgabe farbig rendern
+    let html = "";
+    distribution.forEach(team => {
+        html += `<span class="team" style="background:${teamColors[team]}">${team}</span>`;
+    });
+
+    document.getElementById("result").innerHTML = html;
 }
 
 // Event Listener
 document.getElementById("players").addEventListener("input", generateTeams);
 document.getElementById("teams").addEventListener("input", generateTeams);
 
-// Erste Ausführung
+// Initiale Ausgabe
 generateTeams();
 </script>
 
