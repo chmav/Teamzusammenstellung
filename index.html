@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Team Randomizer</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background: #f4f4f4;
+        margin: 0;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    h1 {
+        color: #333;
+        margin-bottom: 10px;
+    }
+
+    .container {
+        background: #fff;
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        width: 320px;
+    }
+
+    label {
+        font-weight: bold;
+        display: block;
+        margin-top: 15px;
+    }
+
+    input {
+        width: 100%;
+        padding: 8px;
+        font-size: 18px;
+        margin-top: 5px;
+    }
+
+    .result-box {
+        margin-top: 20px;
+        padding: 15px;
+        background: #e9f5ff;
+        border: 1px solid #bcdfff;
+        border-radius: 8px;
+        min-height: 40px;
+        font-size: 20px;
+        word-wrap: break-word;
+        text-align: center;
+    }
+</style>
+</head>
+<body>
+
+<h1>Team Randomizer</h1>
+<div class="container">
+    <label>Anzahl Spieler</label>
+    <input type="number" id="players" value="10" min="1">
+
+    <label>Anzahl Teams</label>
+    <input type="number" id="teams" value="2" min="2">
+
+    <div class="result-box" id="result">Wird generiert …</div>
+</div>
+
+<script>
+function generateTeams() {
+    const numPlayers = parseInt(document.getElementById("players").value);
+    const numTeams = parseInt(document.getElementById("teams").value);
+
+    let teamLetters = [];
+    for (let i = 0; i < numTeams; i++) {
+        teamLetters.push(String.fromCharCode(65 + i)); // A, B, C, ...
+    }
+
+    let distribution = [];
+
+    // Gleichmäßige Verteilung
+    for (let i = 0; i < numPlayers; i++) {
+        distribution.push(teamLetters[i % numTeams]);
+    }
+
+    // Zufällig mischen (Fisher–Yates)
+    for (let i = distribution.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [distribution[i], distribution[j]] = [distribution[j], distribution[i]];
+    }
+
+    document.getElementById("result").innerText = distribution.join(" ");
+}
+
+// Event Listener
+document.getElementById("players").addEventListener("input", generateTeams);
+document.getElementById("teams").addEventListener("input", generateTeams);
+
+// Erste Ausführung
+generateTeams();
+</script>
+
+</body>
+</html>
+``
