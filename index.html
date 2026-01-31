@@ -6,126 +6,146 @@
 <title>Team Randomizer</title>
 
 <style>
+    /* Grundlayout */
     body {
         margin: 0;
         font-family: "Inter", Arial, sans-serif;
-        background: #eef2f5;
+        background: #fafafa;
         display: flex;
         flex-direction: column;
         align-items: center;
     }
 
+    /* Sportlicher Header */
     header {
         width: 100%;
-        padding: 25px 0;
+        padding: 22px 0;
         text-align: center;
-        background: linear-gradient(135deg, #2c3e50, #4ca1af);
+        background: linear-gradient(135deg, #000, #a00000);
         color: white;
         font-size: 26px;
-        font-weight: 600;
+        font-weight: 700;
         letter-spacing: 1px;
-        margin-bottom: 30px;
-        box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+        margin-bottom: 25px;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.25);
     }
 
+    /* Karten-Container */
     .container {
-        width: 360px;
+        width: 92%;
+        max-width: 420px;
         background: white;
-        padding: 25px;
-        border-radius: 16px;
-        box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+        padding: 22px;
+        border-radius: 18px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.12);
     }
 
     label {
-        font-weight: 600;
-        margin-bottom: 6px;
-        color: #333;
+        font-weight: 700;
+        margin-bottom: 8px;
+        color: #222;
+        font-size: 17px;
+        display: block;
     }
 
     .input-group {
-        margin-bottom: 22px;
+        margin-bottom: 24px;
     }
 
-    /* Neues stylisches Number-Input */
+    /* Stylish Number-Inputs */
     .number-wrapper {
         display: flex;
         align-items: center;
-        gap: 10px;
+        gap: 12px;
     }
 
     .number-box {
         width: 100%;
-        padding: 12px;
-        border-radius: 12px;
-        border: 2px solid #d0d7de;
-        font-size: 18px;
+        padding: 14px;
+        border-radius: 14px;
+        border: 2px solid #ccc;
+        font-size: 20px;
         text-align: center;
-        font-weight: 600;
+        font-weight: 700;
         outline: none;
         transition: 0.2s;
     }
 
     .number-box:focus {
-        border-color: #4ca1af;
-        box-shadow: 0 0 6px rgba(76,161,175,0.4);
+        border-color: #a00000;
+        box-shadow: 0 0 6px rgba(160,0,0,0.4);
     }
 
+    /* Stepper neu: Sportlicher Button-Look */
     .stepper {
         display: flex;
         flex-direction: column;
-        gap: 6px;
+        gap: 8px;
     }
 
     .step-btn {
-        width: 36px;
-        height: 36px;
-        background: #4ca1af;
+        width: 46px;
+        height: 46px;
+        background: #a00000;
         border: none;
-        border-radius: 8px;
+        border-radius: 10px;
         color: white;
         cursor: pointer;
-        font-size: 20px;
+        font-size: 22px;
+        font-weight: 900;
         display: flex;
         align-items: center;
         justify-content: center;
         transition: 0.15s;
-        font-weight: 700;
+        touch-action: manipulation;
     }
 
     .step-btn:hover {
-        background: #3b8d98;
-        transform: translateY(-1px);
+        background: #cc0000;
+        transform: translateY(-2px);
     }
 
     .step-btn:active {
         transform: scale(0.92);
     }
 
-    /* Ergebnisbox mit leichter Animation */
+    /* Ergebnisbox */
     .result-box {
-        margin-top: 15px;
-        padding: 20px;
-        background: #f7fbff;
-        border: 1px solid #c9e6ff;
-        border-radius: 12px;
+        padding: 22px;
+        background: #fff5f5;
+        border: 2px solid #ffcccc;
+        border-radius: 16px;
         text-align: center;
-        min-height: 50px;
+        min-height: 60px;
         opacity: 1;
         transition: opacity 0.25s ease-out;
+        font-size: 20px;
     }
 
     .fade {
-        opacity: 0.2;
+        opacity: 0.25;
     }
 
+    /* Team-Badges rot/schwarz-orientiert */
     .team {
         display: inline-block;
-        padding: 6px 10px;
-        margin: 5px;
+        padding: 8px 12px;
+        margin: 6px;
         border-radius: 6px;
         color: white;
         font-weight: 700;
-        font-size: 18px;
+        font-size: 20px;
+    }
+
+    /* Abstände für Smartphones */
+    @media (max-width: 380px) {
+        header {
+            font-size: 22px;
+        }
+        .team {
+            font-size: 18px;
+            padding: 6px 10px;
+        }
     }
 </style>
 </head>
@@ -163,7 +183,7 @@
 </div>
 
 <script>
-// Buttons zum Hoch/Runter-Klicken
+/* Stepper-Buttons */
 function step(field, amount) {
     let element = document.getElementById(field);
     let value = parseInt(element.value);
@@ -176,7 +196,7 @@ function step(field, amount) {
     generateTeams();
 }
 
-// Zufallsfarbe ab Team D
+/* Zufallsfarbe */
 function getRandomColor() {
     const letters = '0123456789ABCDEF';
     let color = '#';
@@ -186,10 +206,9 @@ function getRandomColor() {
     return color;
 }
 
+/* Teams generieren */
 function generateTeams() {
     const resultBox = document.getElementById("result");
-
-    // Animation einleiten
     resultBox.classList.add("fade");
 
     setTimeout(() => {
@@ -201,14 +220,13 @@ function generateTeams() {
             teamLetters.push(String.fromCharCode(65 + i));
         }
 
-        // feste Farben
+        /* Farbregeln (rot/schwarz Fokus) */
         let teamColors = {
             "A": "black",
-            "B": "red",
-            "C": "green"
+            "B": "#cc0000",
+            "C": "#660000"
         };
 
-        // zufällige Farben ab D
         for (let i = 3; i < numTeams; i++) {
             teamColors[String.fromCharCode(65 + i)] = getRandomColor();
         }
@@ -218,31 +236,27 @@ function generateTeams() {
             distribution.push(teamLetters[i % numTeams]);
         }
 
-        // Shuffle
+        /* Shuffle */
         for (let i = distribution.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
             [distribution[i], distribution[j]] = [distribution[j], distribution[i]];
         }
 
-        // HTML erzeugen
+        /* HTML erzeugen */
         let html = "";
         distribution.forEach(team => {
             html += `<span class="team" style="background:${teamColors[team]}">${team}</span>`;
         });
 
         resultBox.innerHTML = html;
-
-        // Animation ausblenden
         resultBox.classList.remove("fade");
 
-    }, 200); // kurze Verzögerung für Animation
+    }, 200);
 }
 
-// Listener
 document.getElementById("players").addEventListener("input", generateTeams);
 document.getElementById("teams").addEventListener("input", generateTeams);
 
-// Start
 generateTeams();
 </script>
 
